@@ -4,6 +4,7 @@ import Vue from 'vue'
 import VueFire from 'vuefire'
 import App from './App'
 import router from './router'
+import store from './store'
 
 import firebase from 'firebase'
 import Vuelidate from 'vuelidate'
@@ -13,18 +14,31 @@ Vue.use(Vuelidate)
 
 Vue.config.productionTip = false
 
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    // this route requires auth, check if logged in
+    // if not, redirect to login page.
+    if (!store.state.user) {
+      next({
+        path: '/auth',
+        query: { redirect: '/signup' }
+      })
+    } else {
+      next()
+    }
+  } else {
+    next() // make sure to always call next()!
+  }
+})
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
-  data () {
-    return {
-      isAuthenticated: false
-    }
-  },
+  store,
   template: '<App/>',
   components: { App },
-  created () {
+  beforeCreate () {
     // Initialize Firebase
     let config = {
       apiKey: 'AIzaSyBp-VoO4yMdfcJjHeG8rCLYmlovp634-yY',

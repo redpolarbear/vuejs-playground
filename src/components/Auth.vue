@@ -1,18 +1,20 @@
 <template>
   <div>
     <h1>This is the Auth (Login) Component</h1>
-    <form @submit.prevent="loginByEmailandPassword" novalidate>
+    <form @submit.prevent="loginWithEmailandPassword()" novalidate>
       <input type="email" ref="email" placeholder="Email" v-model.trim="email"/>
       <input type="password" ref="password" placeholder="Password" v-model="password"/>
       <button type="submit">Login</button>
     </form>
     <p>{{ email }}</p>
     <p>{{ password }}</p>
+    <pre>{{ user }}</pre>
   </div>
 </template>
 
 <script>
-// import firebase from 'firebase'
+import firebase from 'firebase'
+import { mapState } from 'vuex'
 
 export default {
   name: 'auth',
@@ -22,11 +24,33 @@ export default {
       password: ''
     }
   },
-  mounted () {
+  computed: {
+    ...mapState(['user'])
   },
   methods: {
-    loginByEmailandPassword: function () {
-
+    loginWithEmailandPassword: function () {
+      // Sign in with email and pass.
+      // [START authwithemail]
+      // let that = this
+      firebase.auth().signInWithEmailAndPassword(this.email, this.password)
+        // .then(function (user) {
+        //   if (user) {
+        //     this.$router.replace('/')
+        //   }
+        // })
+        .catch(function (error) {
+          // Handle Errors here.
+          let errorCode = error.code
+          let errorMessage = error.message
+          // [START_EXCLUDE]
+          if (errorCode === 'auth/wrong-password') {
+            alert('Wrong password.')
+          } else {
+            alert(errorMessage)
+          }
+          console.log(error)
+          // [END_EXCLUDE]
+        })
     }
   }
 }

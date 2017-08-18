@@ -10,13 +10,14 @@
     <p>{{ password }}</p>
     <pre>{{ $v.email }}</pre>
     <pre>{{ $v.password }}</pre>
-    <pre>{{ currentUser }}</pre>
+    <pre>{{ user }}</pre>
   </div>
 </template>
 
 <script>
 import firebase from 'firebase'
 import { required, minLength, email } from 'vuelidate/lib/validators'
+import { mapState } from 'vuex'
 
 export default {
   name: 'signup',
@@ -37,26 +38,7 @@ export default {
     }
   },
   computed: {
-    currentUser: function () {
-      firebase.auth().onAuthStateChanged(function (user) {
-        if (user) {
-          // User is signed in.
-          // var displayName = user.displayName;
-          // var email = user.email;
-          // var emailVerified = user.emailVerified;
-          // var photoURL = user.photoURL;
-          // var isAnonymous = user.isAnonymous;
-          // var uid = user.uid;
-          // var providerData = user.providerData;
-          return user
-          // ...
-        } else {
-          // User is signed out.
-          // ...
-          return 'not logged in'
-        }
-      })
-    }
+    ...mapState(['user'])
   },
   methods: {
     signupByEmailandPassword () {
