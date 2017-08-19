@@ -2,12 +2,12 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import VueFire from 'vuefire'
+import Vuelidate from 'vuelidate'
+
 import App from './App'
 import router from './router'
 import store from './store'
-
-import firebase from 'firebase'
-import Vuelidate from 'vuelidate'
+import './firebase'
 
 Vue.use(VueFire)
 Vue.use(Vuelidate)
@@ -20,8 +20,7 @@ router.beforeEach((to, from, next) => {
     // if not, redirect to login page.
     if (!store.state.user) {
       next({
-        path: '/auth',
-        query: { redirect: '/signup' }
+        path: '/auth'
       })
     } else {
       next()
@@ -37,17 +36,8 @@ new Vue({
   router,
   store,
   template: '<App/>',
-  components: { App },
-  beforeCreate () {
-    // Initialize Firebase
-    let config = {
-      apiKey: 'AIzaSyBp-VoO4yMdfcJjHeG8rCLYmlovp634-yY',
-      authDomain: 'vuejs-firebase-01-55b96.firebaseapp.com',
-      databaseURL: 'https://vuejs-firebase-01-55b96.firebaseio.com',
-      projectId: 'vuejs-firebase-01-55b96',
-      storageBucket: 'vuejs-firebase-01-55b96.appspot.com',
-      messagingSenderId: '687212823219'
-    }
-    firebase.initializeApp(config)
-  }
+  components: { App }
+  // beforeCreate () {
+  //   // Initialize Firebase
+  // }
 })
