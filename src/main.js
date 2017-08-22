@@ -37,7 +37,4 @@ new Vue({
   store,
   template: '<App/>',
   components: { App }
-  // beforeCreate () {
-  //   // Initialize Firebase
-  // }
 })

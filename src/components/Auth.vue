@@ -8,13 +8,14 @@
     </form>
     <p>{{ email }}</p>
     <p>{{ password }}</p>
-    <pre>{{ user }}</pre>
+    <pre>{{ getUser }}</pre>
   </div>
 </template>
 
 <script>
 import firebase from 'firebase'
-import { mapState } from 'vuex'
+// import { mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'auth',
@@ -25,7 +26,8 @@ export default {
     }
   },
   computed: {
-    ...mapState(['user'])
+    // ...mapState(['user'])
+    ...mapGetters(['getUser'])
   },
   methods: {
     loginWithEmailandPassword: function () {

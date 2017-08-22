@@ -11,11 +11,6 @@ import firebase from 'firebase'
 export default {
   data () {
     return {
-      photo: '',
-      userId: '',
-      name: '',
-      email: '',
-      user: {}
     }
   },
   computed: {

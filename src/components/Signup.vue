@@ -2,15 +2,16 @@
   <div>
     <p>This is the Sign Up Page</p>
     <form @submit.prevent="signupByEmailandPassword()" novalidate>
-      <input type="text" ref="username" placeholder="User name" v-model.trim="username" @input="$v.username.$touch()" />
+      <input type="text" ref="displayName" placeholder="User name" v-model.trim="displayName" @input="$v.displayName.$touch()" />
       <input type="email" ref="email" placeholder="Email" v-model.trim="email" @input="$v.email.$touch()" />
       <input type="password" ref="password" placeholder="Password" v-model="password" @input="$v.password.$touch()" />
       <button type="submit">Sign Up</button>
     </form>
-    <p>{{ username }}</p>
+    <p>{{ displayName }}</p>
     <p>{{ email }}</p>
     <p>{{ password }}</p>
-    <pre>{{ user }}</pre>
+    <pre>{{ getUser }}</pre>
+    <pre>{{ getUserProfile }}</pre>
     <pre>{{ $v.email }}</pre>
     <pre>{{ $v.password }}</pre>
   </div>
@@ -18,15 +19,16 @@
 
 <script>
 import firebase from 'firebase'
+import slug from 'slug'
 import { db } from '../firebase'
-import { required, minLength, email } from 'vuelidate/lib/validators'
-import { mapState } from 'vuex'
+import { required, minLength, email, maxLength } from 'vuelidate/lib/validators'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'signup',
   data () {
     return {
-      username: '',
+      displayName: '',
       email: '',
       password: ''
     }
@@ -37,8 +39,9 @@ export default {
     }
   },
   validations: {
-    username: {
-      required
+    displayName: {
+      required,
+      maxLength: maxLength(30)
     },
     email: {
       required,
@@ -50,13 +53,31 @@ export default {
     }
   },
   computed: {
-    ...mapState(['user'])
+    ...mapGetters(['getUser', 'getUserProfile'])
   },
   methods: {
     async signupByEmailandPassword () {
+      const defaultUserProfile = {
+        displayName: this.displayName,
+        photoURL: 'https://www.google.ca',
+        slug: slug(this.displayName),
+        location: null,
+        about: null
+      }
+      console.log(firebase.database.ServerValue.TIMESTAMP)
       try {
-        await firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
-        this.$firebaseRefs.usersProfile.push({username: this.username})
+        const newUser = await firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
+        const newUserProfile = await newUser.updateProfile({
+          displayName: defaultUserProfile.displayName,
+          photoURL: defaultUserProfile.photoURL
+        })
+        await Promise.all([newUser, newUserProfile])
+        this.$firebaseRefs.usersProfile.child(newUser.uid).update({
+          ...defaultUserProfile,
+          createdAt: firebase.database.ServerValue.TIMESTAMP,
+          updatedAt: firebase.database.ServerValue.TIMESTAMP
+        })
+        this.$store.commit('setUserProfile', defaultUserProfile)
       } catch (error) {
         // Handle Errors here.
         var errorCode = error.code
