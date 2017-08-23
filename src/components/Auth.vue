@@ -45,6 +45,13 @@ export default {
         console.log(error)
       }
     }
+  },
+  beforeRouteEnter (to, from, next) {
+    next(vm => {
+      if (vm.$store.state.user) {
+        vm.$router.replace('/')
+      }
+    })
   }
 }
 </script>

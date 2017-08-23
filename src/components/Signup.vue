@@ -10,8 +10,11 @@
     <p>{{ displayName }}</p>
     <p>{{ email }}</p>
     <p>{{ password }}</p>
+    <ul>
+      <li v-for="item in usersProfile" :key="item._id">{{ item._id}}</li>
+    </ul>
     <pre>{{ getUser }}</pre>
-    <pre>{{ getUserProfile }}</pre>
+    <!-- <pre>{{ getUserProfile }}</pre> -->
     <pre>{{ $v.email }}</pre>
     <pre>{{ $v.password }}</pre>
   </div>
@@ -34,9 +37,9 @@ export default {
       password: ''
     }
   },
-  firebase () {
-    return {
-      usersProfile: db.ref('usersProfile')
+  firebase: {
+    usersProfile: {
+      source: db.ref('usersProfile')
     }
   },
   validations: {
@@ -65,7 +68,6 @@ export default {
         location: null,
         about: null
       }
-      console.log(firebase.database.ServerValue.TIMESTAMP)
       try {
         const newUser = await firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
         const newUserProfile = await newUser.updateProfile({
@@ -78,7 +80,6 @@ export default {
           createdAt: firebase.database.ServerValue.TIMESTAMP,
           updatedAt: firebase.database.ServerValue.TIMESTAMP
         })
-        this.$store.commit('setUserProfile', defaultUserProfile)
       } catch (error) {
         // Handle Errors here.
         var errorCode = error.code

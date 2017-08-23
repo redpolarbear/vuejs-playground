@@ -11,6 +11,7 @@
 <script>
 // import { mapState } from 'vuex'
 import firebase from 'firebase'
+import { db } from './firebase'
 
 export default {
   name: 'app',
@@ -24,13 +25,23 @@ export default {
   beforeCreate () {
     firebase.auth().onAuthStateChanged((user) => {
       // initially user = null, after auth it will be either <fb_user> or false
-      this.$store.commit('setUser', user ? { email: user.email, uid: user.uid } : false)
+      if (user) {
+        db.ref('usersProfile/' + user.uid).on('value', (snapshot) => {
+          this.$store.commit('setUser', Object.assign({ email: user.email, uid: user.uid }, snapshot.val()))
+        })
+      } else {
+        this.$store.commit('setUser', false)
+      }
       if (user && this.$route.path === '/auth') {
         this.$router.replace('/')
       } else if (!user && this.$route.path !== '/auth') {
         this.$router.replace('/auth')
       }
     })
+  },
+  beforeDestroy () {
+    firebase.database().ref().off()
+    console.log('before destroy')
   }
 }
 </script>

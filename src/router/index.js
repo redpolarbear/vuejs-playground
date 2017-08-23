@@ -4,6 +4,7 @@ import Hello from '@/components/Hello'
 import Auth from '@/components/Auth'
 import Home from '@/components/Home'
 import Signup from '@/components/Signup'
+import Profile from '@/components/Profile'
 
 Vue.use(Router)
 
@@ -30,6 +31,11 @@ export default new Router({
       path: '/signup',
       name: 'Signup',
       component: Signup
+    },
+    {
+      path: '/profile/:id',
+      name: 'Profile',
+      component: Profile
     }
   ]
 })
