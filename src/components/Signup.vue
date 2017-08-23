@@ -19,7 +19,8 @@
 
 <script>
 import firebase from 'firebase'
-import slug from 'slug'
+import shortid from 'shortid'
+import md5 from 'md5'
 import { db } from '../firebase'
 import { required, minLength, email, maxLength } from 'vuelidate/lib/validators'
 import { mapGetters } from 'vuex'
@@ -58,9 +59,9 @@ export default {
   methods: {
     async signupByEmailandPassword () {
       const defaultUserProfile = {
+        _id: shortid.generate(),
         displayName: this.displayName,
-        photoURL: 'https://www.google.ca',
-        slug: slug(this.displayName),
+        photoURL: `https://www.gravatar.com/avatar/${md5((this.email.trim()).toLowerCase())}?d=mm&s=200`,
         location: null,
         about: null
       }

@@ -6,7 +6,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     user: null,
-    userProfile: {}
+    userProfile: null
   },
   mutations: {
     setUser (state, value) {

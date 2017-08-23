@@ -3,6 +3,8 @@
 import Vue from 'vue'
 import VueFire from 'vuefire'
 import Vuelidate from 'vuelidate'
+import VueBlu from 'vue-blu'
+import 'vue-blu/dist/css/vue-blu.min.css'
 
 import App from './App'
 import router from './router'
@@ -11,6 +13,7 @@ import './firebase'
 
 Vue.use(VueFire)
 Vue.use(Vuelidate)
+Vue.use(VueBlu)
 
 Vue.config.productionTip = false
 

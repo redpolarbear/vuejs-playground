@@ -26,33 +26,24 @@ export default {
     }
   },
   computed: {
-    // ...mapState(['user'])
-    ...mapGetters(['getUser'])
+    ...mapGetters(['getUser', 'getUserProfile'])
   },
   methods: {
-    loginWithEmailandPassword: function () {
-      // Sign in with email and pass.
-      // [START authwithemail]
-      // let that = this
-      firebase.auth().signInWithEmailAndPassword(this.email, this.password)
-        // .then(function (user) {
-        //   if (user) {
-        //     this.$router.replace('/')
-        //   }
-        // })
-        .catch(function (error) {
-          // Handle Errors here.
-          let errorCode = error.code
-          let errorMessage = error.message
-          // [START_EXCLUDE]
-          if (errorCode === 'auth/wrong-password') {
-            alert('Wrong password.')
-          } else {
-            alert(errorMessage)
-          }
-          console.log(error)
-          // [END_EXCLUDE]
-        })
+    async loginWithEmailandPassword () {
+      try {
+        await firebase.auth().signInWithEmailAndPassword(this.email, this.password)
+      } catch (error) {
+        // Handle Errors here.
+        let errorCode = error.code
+        let errorMessage = error.message
+        // [START_EXCLUDE]
+        if (errorCode === 'auth/wrong-password') {
+          alert('Wrong password.')
+        } else {
+          alert(errorMessage)
+        }
+        console.log(error)
+      }
     }
   }
 }
