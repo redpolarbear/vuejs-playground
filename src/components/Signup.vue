@@ -71,12 +71,14 @@ export default {
       try {
         const newUser = await firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
         const newUserProfile = await newUser.updateProfile({
-          displayName: defaultUserProfile.displayName,
+          displayName: defaultUserProfile._id,
           photoURL: defaultUserProfile.photoURL
         })
         await Promise.all([newUser, newUserProfile])
-        this.$firebaseRefs.usersProfile.child(newUser.uid).update({
+        db.ref('usersProfile').child(defaultUserProfile._id).update({
+        // this.$firebaseRefs.usersProfile.child(newUser.uid).update({
           ...defaultUserProfile,
+          uid: newUser.uid,
           createdAt: firebase.database.ServerValue.TIMESTAMP,
           updatedAt: firebase.database.ServerValue.TIMESTAMP
         })

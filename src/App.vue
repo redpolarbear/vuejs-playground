@@ -26,8 +26,8 @@ export default {
     firebase.auth().onAuthStateChanged((user) => {
       // initially user = null, after auth it will be either <fb_user> or false
       if (user) {
-        db.ref('usersProfile/' + user.uid).on('value', (snapshot) => {
-          this.$store.commit('setUser', Object.assign({ email: user.email, uid: user.uid }, snapshot.val()))
+        db.ref('usersProfile/' + user.displayName).on('value', (snapshot) => {
+          this.$store.commit('setUser', Object.assign({ email: user.email }, snapshot.val()))
         })
       } else {
         this.$store.commit('setUser', false)
