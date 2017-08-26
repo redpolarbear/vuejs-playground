@@ -12,6 +12,7 @@
 // import { mapState } from 'vuex'
 import firebase from 'firebase'
 import { db } from './firebase'
+import { mapMutations } from 'vuex'
 
 export default {
   name: 'app',
@@ -27,10 +28,12 @@ export default {
       // initially user = null, after auth it will be either <fb_user> or false
       if (user) {
         db.ref('usersProfile/' + user.displayName).on('value', (snapshot) => {
-          this.$store.commit('setUser', Object.assign({ email: user.email }, snapshot.val()))
+          // this.$store.commit('setUser', Object.assign({ email: user.email }, snapshot.val()))
+          this.setUser(Object.assign({ email: user.email }, snapshot.val()))
         })
       } else {
-        this.$store.commit('setUser', false)
+        // this.$store.commit('setUser', false)
+        this.setUser(false)
       }
       if (user && this.$route.path === '/auth') {
         this.$router.replace('/')
@@ -42,6 +45,11 @@ export default {
   beforeDestroy () {
     firebase.database().ref().off()
     console.log('before destroy')
+  },
+  methods: {
+    ...mapMutations([
+      'setUser'
+    ])
   }
 }
 </script>
