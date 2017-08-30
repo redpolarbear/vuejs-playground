@@ -6,10 +6,15 @@
     <hr>
     <p>Get User</p>
     <pre>{{ getUser }}</pre>
-    <!-- <pre>{{ relationship }}</pre> -->
-    <p>{{ rela }}</p>
+    <p>{{ relationship }}</p>
     <hr>
-    <button @click="followAction">Follow</button>
+    <button @click.prevent="followAction">{{ buttonText }}</button>
+    <hr>
+    <h2>Following:</h2>
+    <pre>{{ followings }}</pre>
+    <ul>
+      <li></li>
+    </ul>
   </div>
 </template>
 
@@ -22,41 +27,67 @@ export default {
   data () {
     return {
       profile: null,
-      rela: ''
+      relationship: '',
+      followings: []
+    }
+  },
+  watch: {
+    getUser: function (val) {
+      this.relationshipCheck(val)
+      this.getFollowings(val)
     }
   },
   computed: {
     ...mapGetters(['getUser']),
-    relationship: function () {
-      if (this.getUser && this.profile) {
-        console.log(this.profile.uid)
-        db.ref('followings/' + this.getUser.uid).child(this.profile.uid).on('value', (snapshot) => {
-          console.log(snapshot.val())
-          if (snapshot.val() === true) {
-            console.log('friends')
-            this.rela = 'friends'
-          } else {
-            console.log('not friends')
-            this.rela = 'not friends'
-          }
-          // if (snapshot.val() == null) {
-          //   return 'not friends'
-          // }
-        })
-        // return this.getUser.uid
-      }
+    buttonText: function () {
+      return this.rela === 'not friend' ? 'Follow' : 'Following'
     }
   },
   async beforeRouteEnter (to, from, next) {
-    const profile = await db.ref('usersProfile/' + to.params.id).once('value')
-    console.log(profile.val())
-    next(vm => {
-      vm.$data.profile = profile.val()
-    })
+    try {
+      const profile = await db.ref('usersProfile/' + to.params.id).once('value')
+      next(vm => {
+        vm.$data.profile = profile.val()
+      })
+    } catch (error) {
+      console.log(error)
+    }
   },
   methods: {
-    followAction () {
-
+    relationshipCheck (val) {
+      let vm = this
+      db.ref('followings/' + val._id).child(this.profile._id).on('value', (snapshot) => {
+        if (snapshot.val() === true) {
+          vm.relationship = 'friend'
+        } else {
+          vm.relationship = 'not friend'
+        }
+      })
+    },
+    getFollowings (val) {
+      let vm = this
+      db.ref('followings/' + val._id).on('value', (snapshot) => {
+        console.log(snapshot.val())
+        vm.followings = []
+        if (snapshot.val()) {
+          snapshot.forEach((element) => {
+            console.log(element.key)
+            db.ref('usersProfile/' + element.key).once('value')
+              .then((snap) => {
+                vm.followings.push(snap.val().displayName)
+              })
+          })
+        }
+      })
+    },
+    async followAction () {
+      // let updates = {}
+      // updates['followings/' + this.getUser._id] = { [this.profile._id]: true }
+      // updates['followers/' + this.profile._id] = { [this.getUser._id]: true }
+      // db.ref().update(updates)
+      const addFollowings = db.ref('followings/' + this.getUser._id).child(this.profile._id).set(true)
+      const addFollowers = db.ref('followers/' + this.profile._id).child(this.getUser._id).set(true)
+      await Promise.all([addFollowings, addFollowers])
     }
   }
 }
