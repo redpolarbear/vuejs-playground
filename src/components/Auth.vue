@@ -29,6 +29,9 @@ export default {
     ...mapGetters(['getUser', 'getUserProfile'])
   },
   methods: {
+    onSignin () {
+      this.$store.dispatch('signUserIn')
+    },
     async loginWithEmailandPassword () {
       try {
         await firebase.auth().signInWithEmailAndPassword(this.email, this.password)

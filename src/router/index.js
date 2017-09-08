@@ -5,6 +5,7 @@ import Auth from '@/components/Auth'
 import Home from '@/components/Home'
 import Signup from '@/components/Signup'
 import Profile from '@/components/Profile'
+import AuthGuard from './auth-guard'
 
 Vue.use(Router)
 
@@ -37,5 +38,6 @@ export default new Router({
       name: 'Profile',
       component: Profile
     }
-  ]
+  ],
+  beforeEach: AuthGuard
 })
