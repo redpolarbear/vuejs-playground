@@ -36,7 +36,8 @@ export default new Router({
     {
       path: '/profile/:id',
       name: 'Profile',
-      component: Profile
+      component: Profile,
+      meta: { requiresAuth: true }
     }
   ],
   beforeEach: AuthGuard
